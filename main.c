@@ -13,6 +13,8 @@ main(int argc, char *argv[])
 {	WINDOW *chat_win;
 	int startx, starty, width, height;
 	int ch;
+        int ch1;
+
 	Point origin;
 	Rectangle chat;
 	char *input;
@@ -43,6 +45,11 @@ main(int argc, char *argv[])
 	move(LINES - 1, inputcur);
 	refresh();
 
+        /* Init question windows*/
+        for(int i = 0; i < MAXWIN; i++){
+          all_chats[i] = newChat(); //use constructor
+        }
+          
 	/* Draw first window */
 	chat_win = create_newwin(chat);
 
@@ -81,6 +88,17 @@ main(int argc, char *argv[])
 			mvwprintw(chat_win, 1, 1, input);
 			wrefresh(chat_win);
 			break;
+                case '`':
+                        ch1 = getch();
+                        int prevWin = curwin;
+                        helperDestroy(curwin);
+                        curwin = atoi(ch1);
+                        //Invalid input should redraw current window
+                        if(!isdigit(curwin))
+                          helperCreate(prevWin);
+                        else
+                          helperCreate(curwin);
+                        break;
 		default:
 			/* Print what the user typed */
 			mvaddch(LINES - 1,inputcur, ch);
