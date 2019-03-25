@@ -1,6 +1,8 @@
 #include <ncurses.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
+#include <ctype.h>
 
 #include "hat.h"
 
@@ -10,7 +12,8 @@ int curwin = 0;
 
 int
 main(int argc, char *argv[])
-{	WINDOW *chat_win;
+{
+	WINDOW *chat_win;
 	int startx, starty, width, height;
 	int ch;
         int ch1;
@@ -24,6 +27,8 @@ main(int argc, char *argv[])
 	int inputsize = 50;
 	int inputcur = 0;
 	input = malloc(sizeof(char) * inputsize);
+
+	memset(all_chats, 0, sizeof(all_chats));
 
 	sock = contoserver("127.0.0.1", 8000);
 	if(sock < 0){
@@ -47,18 +52,21 @@ main(int argc, char *argv[])
 
         /* Init question windows*/
         for(int i = 0; i < MAXWIN; i++){
-          all_chats[i] = newChat(); //use constructor
+          all_chats[i] = newchat(&chat); //use constructor
+          chat.min.x++;
+          chat.min.y++;
         }
           
 	/* Draw first window */
-	chat_win = create_newwin(chat);
+	//chat_win = create_newwin(chat);
+        chat_win = all_chats[curwin].win;
 
 	while((ch = getch()) != KEY_F(1)){
 		switch(ch){
 		case KEY_LEFT:
 			/* Resize window with new cordinates, print what is in the buffer */
 			origin.x--;
-			moveorigin(&chat, origin);
+			//moveorigin(&chat, origin);
 			destroy_win(chat_win);
 			chat_win = create_newwin(chat);
 			mvwprintw(chat_win, 1, 1, input);
@@ -66,7 +74,7 @@ main(int argc, char *argv[])
 			break;
 		case KEY_RIGHT:
 			origin.x++;
-			moveorigin(&chat, origin);
+			//moveorigin(&chat, origin);
 			destroy_win(chat_win);
 			chat_win = create_newwin(chat);
 			mvwprintw(chat_win, 1, 1, input);
@@ -74,7 +82,7 @@ main(int argc, char *argv[])
 			break;
 		case KEY_UP:
 			origin.y--;
-			moveorigin(&chat, origin);
+			//moveorigin(&chat, origin);
 			destroy_win(chat_win);
 			chat_win = create_newwin(chat);
 			mvwprintw(chat_win, 1, 1, input);
@@ -82,22 +90,23 @@ main(int argc, char *argv[])
 			break;
 		case KEY_DOWN:
 			origin.y++;
-			moveorigin(&chat, origin);
+			//moveorigin(&chat, origin);
 			destroy_win(chat_win);
 			chat_win = create_newwin(chat);
 			mvwprintw(chat_win, 1, 1, input);
 			wrefresh(chat_win);
 			break;
-                case '`':
+                case '=':
                         ch1 = getch();
-                        int prevWin = curwin;
-                        helperDestroy(curwin);
-                        curwin = atoi(ch1);
+                        char buf[2] = "l";
+                        buf[0] = ch1;
+                        curwin = atoi(buf);
                         //Invalid input should redraw current window
                         if(!isdigit(curwin))
-                          helperCreate(prevWin);
-                        else
-                          helperCreate(curwin);
+                          break;
+                        clearwin(&all_chats[curwin]);
+                        drawwin(&all_chats[curwin]);
+                        chat_win = all_chats[curwin].win;
                         break;
 		default:
 			/* Print what the user typed */
@@ -126,46 +135,3 @@ main(int argc, char *argv[])
 	return 0;
 }
 
-void
-moveorigin(Rectangle *r, Point p)
-{
-	*r = (Rectangle){p, (Point){p.x + (r->max.x - r->min.x), p.y + (r->max.y - r->min.y)}};
-}
-
-WINDOW*
-create_newwin(Rectangle r)
-{	WINDOW *win;
-	int height = r.max.y - r.min.y;
-	int width = r.max.x - r.min.x;
-
-	win = newwin(height, width, r.min.y, r.min.x);
-	box(win, 0 , 0);		/* 0, 0 gives default characters 
-					 * for the vertical and horizontal
-					 * lines			*/
-	wrefresh(win);		/* Show that box 		*/
-
-	return win;
-}
-
-void
-destroy_win(WINDOW *win)
-{	
-	/* box(win, ' ', ' '); : This won't produce the desired
-	 * result of erasing the window. It will leave it's four corners 
-	 * and so an ugly remnant of window. 
-	 */
-	wborder(win, ' ', ' ', ' ',' ',' ',' ',' ',' ');
-	/* The parameters taken are 
-	 * 1. win: the window on which to operate
-	 * 2. ls: character to be used for the left side of the window 
-	 * 3. rs: character to be used for the right side of the window 
-	 * 4. ts: character to be used for the top side of the window 
-	 * 5. bs: character to be used for the bottom side of the window 
-	 * 6. tl: character to be used for the top left corner of the window 
-	 * 7. tr: character to be used for the top right corner of the window 
-	 * 8. bl: character to be used for the bottom left corner of the window 
-	 * 9. br: character to be used for the bottom right corner of the window
-	 */
-	wrefresh(win);
-	delwin(win);
-}

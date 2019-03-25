@@ -25,6 +25,10 @@ extern int curwin;
 /* net.c */
 int contoserver(char *name, int port);
 
-WINDOW 	*create_newwin(Rectangle r);
-void 		destroy_win(WINDOW *win);
-void 		moveorigin(Rectangle *r, Point p);
+/*chat.c */
+WINDOW 	*create_newwin(Rectangle);
+void 		destroy_win(WINDOW*);
+void 		moveorigin(Chat*, Point);
+Chat		newchat(Rectangle *r);
+void		clearwin(Chat*);
+void		drawwin(Chat*);
