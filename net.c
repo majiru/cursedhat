@@ -6,6 +6,9 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <ncurses.h>
+#include "hat.h"
+
 int
 contoserver(char *name, int port)
 {
@@ -24,8 +27,8 @@ contoserver(char *name, int port)
 	sin.sin_family = AF_INET;
 	sin.sin_port =  htons(port);
 
-	int true = 1;
-	if(setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &true, sizeof(int)) < 0){
+	int trueval = 1;
+	if(setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &trueval, sizeof(int)) < 0){
 		fprintf(stderr, "Failed to set socket options!\n");
 		close(fd);
 		return -1;

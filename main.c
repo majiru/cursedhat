@@ -2,34 +2,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define MAXWIN 20
-
-typedef
-struct Point {
-	int x, y;
-} Point;
-
-typedef
-struct Rectangle {
-	Point min, max;
-} Rectangle;
-
-typedef
-struct Chat {
-	char *title;
-	WINDOW *win;
-	Rectangle r;
-	char *buf;
-	int	bufsize;
-} Chat;
+#include "hat.h"
 
 Chat all_chats[MAXWIN];
 
 int curwin = 0;
-
-WINDOW 	*create_newwin(Rectangle r);
-void 		destroy_win(WINDOW *win);
-void 		moveorigin(Rectangle *r, Point p);
 
 int
 main(int argc, char *argv[])
@@ -46,8 +23,6 @@ main(int argc, char *argv[])
 	int inputcur = 0;
 	input = malloc(sizeof(char) * inputsize);
 
-
-	extern contoserver(char *name, int port);
 	sock = contoserver("127.0.0.1", 8000);
 	if(sock < 0){
 		perror("Could not connect to server");
