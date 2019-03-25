@@ -23,11 +23,20 @@ main(int argc, char *argv[])
 	Point origin;
 	Rectangle chat;
 	char *input;
+	int sock;
 
 	/* Init buffer for user input */
 	int inputsize = 50;
 	int inputcur = 0;
 	input = malloc(sizeof(char) * inputsize);
+
+
+	extern contoserver(char *name, int port);
+	sock = contoserver("127.0.0.1", 8000);
+	if(sock < 0){
+		perror("Could not connect to server");
+		return -1;
+	}
 
 	initscr();			/* Start curses mode  */
 	cbreak();			/* No line buffer, we get every character as typed */
@@ -90,6 +99,8 @@ main(int argc, char *argv[])
 				inputsize = inputsize * 2;
 				input = realloc(input, inputsize);
 			}
+
+			write(sock, &ch, 1);
 
 			/* store value and make it a proper string */
 			input[inputcur++] = ch;

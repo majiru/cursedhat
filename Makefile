@@ -1,3 +1,3 @@
 
 default:
-	gcc -l ncurses main.c -o chat
+	gcc -ggdb -l ncurses main.c net.c  -o chat
