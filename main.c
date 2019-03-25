@@ -1,5 +1,8 @@
 #include <ncurses.h>
 #include <stdlib.h>
+#include <unistd.h>
+
+#define MAXWIN 20
 
 typedef
 struct Point {
@@ -10,6 +13,19 @@ typedef
 struct Rectangle {
 	Point min, max;
 } Rectangle;
+
+typedef
+struct Chat {
+	char *title;
+	WINDOW *win;
+	Rectangle r;
+	char *buf;
+	int	bufsize;
+} Chat;
+
+Chat all_chats[MAXWIN];
+
+int curwin = 0;
 
 WINDOW 	*create_newwin(Rectangle r);
 void 		destroy_win(WINDOW *win);
