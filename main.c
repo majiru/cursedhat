@@ -16,7 +16,7 @@ main(int argc, char *argv[])
 	WINDOW *chat_win;
 	int startx, starty, width, height;
 	int ch;
-        int ch1;
+	int ch1;
 
 	Point origin;
 	Rectangle chat;
@@ -39,6 +39,7 @@ main(int argc, char *argv[])
 	initscr();			/* Start curses mode  */
 	cbreak();			/* No line buffer, we get every character as typed */
 	keypad(stdscr, TRUE);		/* Allow special characters in*/
+	noecho();
 
 	/* Set origin for char window */
 	origin = (Point){1, 1};
@@ -50,64 +51,31 @@ main(int argc, char *argv[])
 	move(LINES - 1, inputcur);
 	refresh();
 
-        /* Init question windows*/
-        for(int i = 0; i < MAXWIN; i++){
-          all_chats[i] = newchat(&chat); //use constructor
-          chat.min.x++;
-          chat.min.y++;
-        }
-          
+	/* Init question windows*/
+	for(int i = 0; i < MAXWIN; i++){
+	  all_chats[i] = newchat(&chat); //use constructor
+	  chat.min.x++;
+	  chat.min.y++;
+	}
+
 	/* Draw first window */
-	//chat_win = create_newwin(chat);
-        chat_win = all_chats[curwin].win;
+	drawwin(&all_chats[curwin]);
+	chat_win = all_chats[curwin].win;
 
 	while((ch = getch()) != KEY_F(1)){
 		switch(ch){
-		case KEY_LEFT:
-			/* Resize window with new cordinates, print what is in the buffer */
-			origin.x--;
-			//moveorigin(&chat, origin);
-			destroy_win(chat_win);
-			chat_win = create_newwin(chat);
-			mvwprintw(chat_win, 1, 1, input);
-			wrefresh(chat_win);
+		case '`':
+			ch1 = getch();
+			if(!isdigit(ch1))
+				break;
+			char buf[2] = "a";
+			buf[0] = ch1;
+			clearwin(&all_chats[curwin]);
+			//Invalid input should redraw current window
+			curwin = atoi(buf);
+			drawwin(&all_chats[curwin]);
+			chat_win = all_chats[curwin].win;
 			break;
-		case KEY_RIGHT:
-			origin.x++;
-			//moveorigin(&chat, origin);
-			destroy_win(chat_win);
-			chat_win = create_newwin(chat);
-			mvwprintw(chat_win, 1, 1, input);
-			wrefresh(chat_win);
-			break;
-		case KEY_UP:
-			origin.y--;
-			//moveorigin(&chat, origin);
-			destroy_win(chat_win);
-			chat_win = create_newwin(chat);
-			mvwprintw(chat_win, 1, 1, input);
-			wrefresh(chat_win);
-			break;
-		case KEY_DOWN:
-			origin.y++;
-			//moveorigin(&chat, origin);
-			destroy_win(chat_win);
-			chat_win = create_newwin(chat);
-			mvwprintw(chat_win, 1, 1, input);
-			wrefresh(chat_win);
-			break;
-                case '=':
-                        ch1 = getch();
-                        char buf[2] = "l";
-                        buf[0] = ch1;
-                        curwin = atoi(buf);
-                        //Invalid input should redraw current window
-                        if(!isdigit(curwin))
-                          break;
-                        clearwin(&all_chats[curwin]);
-                        drawwin(&all_chats[curwin]);
-                        chat_win = all_chats[curwin].win;
-                        break;
 		default:
 			/* Print what the user typed */
 			mvaddch(LINES - 1,inputcur, ch);
@@ -130,7 +98,7 @@ main(int argc, char *argv[])
 			break;
 		}
 	}
-		
+
 	endwin();			/* End curses mode		  */
 	return 0;
 }

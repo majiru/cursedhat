@@ -14,7 +14,7 @@ create_newwin(Rectangle r)
 	box(win, 0 , 0);		/* 0, 0 gives default characters 
 					 * for the vertical and horizontal
 					 * lines			*/
-	wrefresh(win);		/* Show that box 		*/
+	wrefresh(win);		/* Show that box		*/
 
 	return win;
 }
@@ -46,6 +46,8 @@ void
 moveorigin(Chat *c, Point p)
 {
 	c->r = (Rectangle){p, (Point){p.x + (c->r.max.x - c->r.min.x), p.y + (c->r.max.y - c->r.min.y)}};
+	clearwin(c);
+	drawwin(c);
 }
 
 Chat
@@ -60,7 +62,7 @@ newchat(Rectangle *r)
 	else
 		c.r = *r;
 
-	c.win = create_newwin(c.r);
+	c.win = NULL;
 	c.buf = malloc(COLS);
 	c.bufsize = COLS;
 
@@ -77,7 +79,5 @@ clearwin(Chat *c)
 void
 drawwin(Chat *c)
 {
-	if(c->win == NULL)
-		return;
 	c->win = create_newwin(c->r);
 }
