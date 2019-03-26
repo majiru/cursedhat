@@ -25,7 +25,7 @@ contoserver(char *name, int port)
 	memcpy(&sin.sin_addr,server->h_addr_list[0], server->h_length);
 
 	sin.sin_family = AF_INET;
-	sin.sin_port =  htons(port);
+	sin.sin_port = htons(port);
 
 	int trueval = 1;
 	if(setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &trueval, sizeof(int)) < 0){
@@ -39,3 +39,4 @@ contoserver(char *name, int port)
 
 	return fd;
 }
+
