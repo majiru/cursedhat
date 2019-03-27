@@ -102,23 +102,11 @@ main(int argc, char *argv[])
 			/* Print what the user typed */
 			(void)mvaddch(LINES - 1,cur->bufcur, ch);
 
-			/* Make sure we can store the new character + null byte */
-			if(cur->bufcur + 2 > cur->bufsize){
-				cur->bufsize *= 2;
-				cur->buf = realloc(cur->buf, cur->bufsize);
-
-				if (cur->buf == NULL && cur->bufsize != 0) {
-					// TODO error
-				}
-			}
+			appendbuf(cur, ch);
 
 			if (write(sock, &ch, 1) == -1) {
 				// TODO error
 			}
-
-			/* store value and make it a proper string */
-			cur->buf[cur->bufcur++] = ch;
-			cur->buf[cur->bufcur] = '\0';
 
 			/* Send new string to window */
 			(void)mvwprintw(cur->win, 1, 1, cur->buf);

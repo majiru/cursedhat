@@ -113,3 +113,18 @@ drawwin(Chat *c)
 	c->win = create_newwin(c->r);
 }
 
+void
+appendbuf(Chat *c, char ch)
+{
+	if(c->bufcur + 2 > c->bufsize){
+		c->bufsize *= 2;
+		c->buf = realloc(c->buf, c->bufsize);
+
+		if (c->buf == NULL && c->bufsize != 0) {
+			// TODO error
+		}
+	}
+
+	c->buf[c->bufcur++] = ch;
+	c->buf[c->bufcur] = '\0';
+}
