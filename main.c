@@ -33,6 +33,7 @@ main(int argc, char *argv[])
 	sock = contoserver("127.0.0.1", 8000);
 	if(sock < 0){
 		perror("Could not connect to server");
+		free(input);
 		return -1;
 	}
 
@@ -100,6 +101,7 @@ main(int argc, char *argv[])
 	}
 
 	endwin();			/* End curses mode */
+	free(input);
 	return 0;
 }
 
