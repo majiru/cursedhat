@@ -36,7 +36,7 @@ main(int argc, char *argv[])
 		return -1;
 	}
 
-	initscr();			/* Start curses mode  */
+	initscr();			/* Start curses mode */
 	cbreak();			/* No line buffer, we get every character as typed */
 	keypad(stdscr, TRUE);		/* Allow special characters in*/
 	noecho();
@@ -53,9 +53,9 @@ main(int argc, char *argv[])
 
 	/* Init question windows*/
 	for(int i = 0; i < MAXWIN; i++){
-	  all_chats[i] = newchat(&chat); //use constructor
-	  chat.min.x++;
-	  chat.min.y++;
+		all_chats[i] = newchat(&chat); //use constructor
+		chat.min.x++;
+		chat.min.y++;
 	}
 
 	/* Draw first window */
@@ -99,7 +99,7 @@ main(int argc, char *argv[])
 		}
 	}
 
-	endwin();			/* End curses mode		  */
+	endwin();			/* End curses mode */
 	return 0;
 }
 

@@ -32,3 +32,4 @@ void 		moveorigin(Chat*, Point);
 Chat		newchat(Rectangle *r);
 void		clearwin(Chat*);
 void		drawwin(Chat*);
+
