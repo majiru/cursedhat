@@ -16,6 +16,7 @@ struct Chat {
 	WINDOW *win;
 	Rectangle r;
 	char *buf;
+	int bufcur;
 	int	bufsize;
 } Chat;
 

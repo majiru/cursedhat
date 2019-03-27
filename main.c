@@ -8,36 +8,22 @@
 
 Chat all_chats[MAXWIN];
 
-int curwin = 0;
-
 int
 main(int argc, char *argv[])
 {
-	WINDOW *chat_win;
-	int startx, starty, width, height;
-	int ch;
-	int ch1;
+	char ch;
+	char tmp;
+	int sock;
 
 	Point origin;
 	Rectangle chat;
-	char *input;
-	int sock;
-
-	/* Init buffer for user input */
-	int inputsize = 50;
-	int inputcur = 0;
-	input = malloc(sizeof(char) * inputsize);
-
-	if (input == NULL && inputsize != 0) {
-		// TODO
-	}
+	Chat *cur;
 
 	memset(all_chats, 0, sizeof(all_chats));
 
 	sock = contoserver("127.0.0.1", 8000);
 	if(sock < 0){
 		perror("Could not connect to server");
-		free(input);
 		return -1;
 	}
 	/* Start curses mode */
@@ -72,7 +58,7 @@ main(int argc, char *argv[])
 	(void)printw("Print F1 to exit");
 
 	/* Send cursor to bottom where user will be typing */
-	if (move(LINES - 1, inputcur) == ERR) {
+	if (move(LINES - 1, 0) == ERR) {
 		// TODO
 	}
 
@@ -88,40 +74,40 @@ main(int argc, char *argv[])
 	}
 
 	/* Draw first window */
-	drawwin(&all_chats[curwin]);
-	chat_win = all_chats[curwin].win;
+	cur = all_chats;
+	drawwin(cur);
 
 	while((ch = getch()) != KEY_F(1)){
 		switch(ch){
 		case '`':
-			ch1 = getch();
-			if (ch1 == ERR) {
+			tmp = getch();
+			if (tmp == ERR) {
 				// TODO
 			}
 
-			if(!isdigit(ch1))
+			if(!isdigit(tmp))
 				break;
 
 			char buf[2] = "a";
-			buf[0] = ch1;
+			buf[0] = tmp;
+			tmp = atoi(buf);
+			if(tmp >= MAXWIN)
+				break;
 
-			clearwin(&all_chats[curwin]);
-
-			//Invalid input should redraw current window
-			curwin = atoi(buf);
-			drawwin(&all_chats[curwin]);
-			chat_win = all_chats[curwin].win;
+			clearwin(cur);
+			cur = &all_chats[atoi(buf)];
+			drawwin(cur);
 			break;
 		default:
 			/* Print what the user typed */
-			(void)mvaddch(LINES - 1,inputcur, ch);
+			(void)mvaddch(LINES - 1,cur->bufcur, ch);
 
 			/* Make sure we can store the new character + null byte */
-			if(inputcur + 2 > inputsize){
-				inputsize *= 2;
-				input = realloc(input, inputsize);
+			if(cur->bufcur + 2 > cur->bufsize){
+				cur->bufsize *= 2;
+				cur->buf = realloc(cur->buf, cur->bufsize);
 
-				if (input == NULL && inputsize != 0) {
+				if (cur->buf == NULL && cur->bufsize != 0) {
 					// TODO error
 				}
 			}
@@ -131,13 +117,13 @@ main(int argc, char *argv[])
 			}
 
 			/* store value and make it a proper string */
-			input[inputcur++] = ch;
-			input[inputcur] = '\0';
+			cur->buf[cur->bufcur++] = ch;
+			cur->buf[cur->bufcur] = '\0';
 
 			/* Send new string to window */
-			(void)mvwprintw(chat_win, 1, 1, input);
+			(void)mvwprintw(cur->win, 1, 1, cur->buf);
 
-			if (wrefresh(chat_win) == ERR) {
+			if (wrefresh(cur->win) == ERR) {
 				// TODO
 			}
 			break;
@@ -148,8 +134,6 @@ main(int argc, char *argv[])
 	if (endwin() == ERR) {
 		// TODO error
 	}
-
-	free(input);
 
 	for(int i = 0; i < MAXWIN; i++){
 		free(all_chats[i].buf);
