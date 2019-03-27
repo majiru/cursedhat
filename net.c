@@ -21,6 +21,11 @@ contoserver(char *name, int port)
 		return -1;
 
 	fd = socket(AF_INET, SOCK_STREAM, 0);
+
+	if (fd == -1) {
+		// TODO
+	}
+
 	memset(&sin, 0, sizeof(struct sockaddr_in));
 	memcpy(&sin.sin_addr,server->h_addr_list[0], server->h_length);
 
