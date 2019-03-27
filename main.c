@@ -28,34 +28,63 @@ main(int argc, char *argv[])
 	int inputcur = 0;
 	input = malloc(sizeof(char) * inputsize);
 
+	if (input == NULL && inputsize != 0) {
+		// TODO
+	}
+
 	memset(all_chats, 0, sizeof(all_chats));
 
 	sock = contoserver("127.0.0.1", 8000);
 	if(sock < 0){
 		perror("Could not connect to server");
+		free(input);
 		return -1;
 	}
+	/* Start curses mode */
+	if (initscr() == NULL) {
+		// TODO
+	}
 
-	initscr();			/* Start curses mode  */
-	cbreak();			/* No line buffer, we get every character as typed */
-	keypad(stdscr, TRUE);		/* Allow special characters in*/
-	noecho();
+	/* No line buffer, we get every character as typed */
+	if (cbreak() == ERR) {
+		// TODO
+	}
+
+	/* Allow special characters in*/
+	if (keypad(stdscr, TRUE) == ERR) {
+		// TODO
+	}
+
+	if (noecho() == ERR) {
+		// TODO
+	}
 
 	/* Set origin for char window */
 	origin = (Point){1, 1};
-	/* Set size to be 3/4 size of the screen */
-	chat = (Rectangle){origin, (Point){origin.x + (COLS/4*3), origin.y + (LINES/4*3) }};
 
-	printw("Print F1 to exit");
+	/* Set size to be 3/4 size of the screen */
+	chat = (Rectangle){
+		origin,
+		(Point){origin.x + (COLS/4*3),
+		origin.y + (LINES/4*3) }
+	};
+
+	(void)printw("Print F1 to exit");
+
 	/* Send cursor to bottom where user will be typing */
-	move(LINES - 1, inputcur);
-	refresh();
+	if (move(LINES - 1, inputcur) == ERR) {
+		// TODO
+	}
+
+	if (refresh() == ERR) {
+		// TODO
+	}
 
 	/* Init question windows*/
 	for(int i = 0; i < MAXWIN; i++){
-	  all_chats[i] = newchat(&chat); //use constructor
-	  chat.min.x++;
-	  chat.min.y++;
+		all_chats[i] = newchat(&chat); //use constructor
+		chat.min.x++;
+		chat.min.y++;
 	}
 
 	/* Draw first window */
@@ -66,11 +95,18 @@ main(int argc, char *argv[])
 		switch(ch){
 		case '`':
 			ch1 = getch();
+			if (ch1 == ERR) {
+				// TODO
+			}
+
 			if(!isdigit(ch1))
 				break;
+
 			char buf[2] = "a";
 			buf[0] = ch1;
+
 			clearwin(&all_chats[curwin]);
+
 			//Invalid input should redraw current window
 			curwin = atoi(buf);
 			drawwin(&all_chats[curwin]);
@@ -78,28 +114,47 @@ main(int argc, char *argv[])
 			break;
 		default:
 			/* Print what the user typed */
-			mvaddch(LINES - 1,inputcur, ch);
+			(void)mvaddch(LINES - 1,inputcur, ch);
 
 			/* Make sure we can store the new character + null byte */
 			if(inputcur + 2 > inputsize){
-				inputsize = inputsize * 2;
+				inputsize *= 2;
 				input = realloc(input, inputsize);
+
+				if (input == NULL && inputsize != 0) {
+					// TODO error
+				}
 			}
 
-			write(sock, &ch, 1);
+			if (write(sock, &ch, 1) == -1) {
+				// TODO error
+			}
 
 			/* store value and make it a proper string */
 			input[inputcur++] = ch;
 			input[inputcur] = '\0';
 
 			/* Send new string to window */
-			mvwprintw(chat_win, 1, 1, input);
-			wrefresh(chat_win);
+			(void)mvwprintw(chat_win, 1, 1, input);
+
+			if (wrefresh(chat_win) == ERR) {
+				// TODO
+			}
 			break;
 		}
 	}
 
-	endwin();			/* End curses mode		  */
+	/* End curses mode */
+	if (endwin() == ERR) {
+		// TODO error
+	}
+
+	free(input);
+
+	for(int i = 0; i < MAXWIN; i++){
+		free(all_chats[i].buf);
+	}
+
 	return 0;
 }
 
