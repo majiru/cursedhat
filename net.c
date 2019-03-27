@@ -45,3 +45,15 @@ contoserver(char *name, int port)
 	return fd;
 }
 
+int
+readmsg(int sock, char *buf, char delim)
+{
+	int n, count;
+	n = count = 0;
+	
+	while( (n = read(sock, buf, 1)) > 0 && *(buf++) != delim)
+		count += n;
+
+	*(--buf) = '\0';
+	return count;
+}

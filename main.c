@@ -98,15 +98,25 @@ main(int argc, char *argv[])
 			cur = &all_chats[atoi(buf)];
 			drawwin(cur);
 			break;
+		case '\t':
+			tmp = readmsg(sock, cur->buf, ';');
+			cur->bufcur = tmp;
+			(void)mvwprintw(cur->win, 1, 1, cur->buf);
+			(void)mvprintw(LINES - 1, 0, cur->buf);
+			if (wrefresh(cur->win) == ERR) {
+				// TODO
+			}
+			break;
 		default:
 			/* Print what the user typed */
 			(void)mvaddch(LINES - 1,cur->bufcur, ch);
 
 			appendbuf(cur, ch);
 
-			if (write(sock, &ch, 1) == -1) {
-				// TODO error
-			}
+			// TODO: Add support on the server to read 
+			//if (write(sock, &ch, 1) == -1) {
+			//	// TODO error
+			//}
 
 			/* Send new string to window */
 			(void)mvwprintw(cur->win, 1, 1, cur->buf);

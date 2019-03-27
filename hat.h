@@ -24,7 +24,8 @@ extern Chat all_chats[MAXWIN];
 extern int curwin;
 
 /* net.c */
-int contoserver(char *name, int port);
+int 	contoserver(char *name, int port);
+int	readmsg(int, char*, char);
 
 /*chat.c */
 WINDOW 	*create_newwin(Rectangle);
