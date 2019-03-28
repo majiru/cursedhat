@@ -36,3 +36,6 @@ void		clearwin(Chat*);
 void		drawwin(Chat*);
 void		appendbuf(Chat*, char);
 
+/* hat.h */
+void	cerr(int, char const *, ...);
+void	cerrx(int, char const *, ...);
