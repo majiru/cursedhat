@@ -21,8 +21,9 @@ bind server_sock (ADDR_INET (address, 8000)) ;
 
 listen server_sock 50 ;
 
-while true do 
+while true do
 	let (client_sock, client_addr) = accept server_sock in
-	sock_send client_sock "Welcome!!;" ;
+	ignore(sock_send client_sock "Welcome!!;") ;
 	shutdown client_sock SHUTDOWN_ALL
 	done ;;
+
