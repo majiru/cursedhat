@@ -23,26 +23,26 @@ main(int argc, char *argv[])
 
 	sock = contoserver("127.0.0.1", 8000);
 	if(sock < 0){
-		perror("Could not connect to server");
-		return -1;
+		cerr(1, "could not connect to server");
 	}
+
 	/* Start curses mode */
 	if (initscr() == NULL) {
-		// TODO
+		cerrx(1, "main initscr");
 	}
 
 	/* No line buffer, we get every character as typed */
 	if (cbreak() == ERR) {
-		// TODO
+		cerrx(1, "main cbreak");
 	}
 
 	/* Allow special characters in*/
 	if (keypad(stdscr, TRUE) == ERR) {
-		// TODO
+		cerrx(1, "main keypad");
 	}
 
 	if (noecho() == ERR) {
-		// TODO
+		cerrx(1, "main noecho");
 	}
 
 	/* Set origin for char window */
@@ -59,11 +59,11 @@ main(int argc, char *argv[])
 
 	/* Send cursor to bottom where user will be typing */
 	if (move(LINES - 1, 0) == ERR) {
-		// TODO
+		cerrx(1, "main move");
 	}
 
 	if (refresh() == ERR) {
-		// TODO
+		cerrx(1, "main refresh");
 	}
 
 	/* Init question windows*/
@@ -80,9 +80,8 @@ main(int argc, char *argv[])
 	while((ch = getch()) != KEY_F(1)){
 		switch(ch){
 		case '`':
-			tmp = getch();
-			if (tmp == ERR) {
-				// TODO
+			if ((tmp = getch()) == ERR) {
+				cerrx(1, "main tmp getch");
 			}
 
 			if(!isdigit(tmp))
@@ -104,7 +103,7 @@ main(int argc, char *argv[])
 			(void)mvwprintw(cur->win, 1, 1, cur->buf);
 			(void)mvprintw(LINES - 1, 0, cur->buf);
 			if (wrefresh(cur->win) == ERR) {
-				// TODO
+				cerrx(1, "main wrefresh cur->win (tab)");
 			}
 			break;
 		default:
@@ -113,16 +112,16 @@ main(int argc, char *argv[])
 
 			appendbuf(cur, ch);
 
-			// TODO: Add support on the server to read 
+			// TODO: Add support on the server to read
 			//if (write(sock, &ch, 1) == -1) {
-			//	// TODO error
+			//	cerr(1, "main write sock");
 			//}
 
 			/* Send new string to window */
 			(void)mvwprintw(cur->win, 1, 1, cur->buf);
 
 			if (wrefresh(cur->win) == ERR) {
-				// TODO
+				cerrx(1, "main wrefresh cur->win (default)");
 			}
 			break;
 		}
@@ -130,7 +129,7 @@ main(int argc, char *argv[])
 
 	/* End curses mode */
 	if (endwin() == ERR) {
-		// TODO error
+		cerrx(1, "main endwin");
 	}
 
 	for(int i = 0; i < MAXWIN; i++){

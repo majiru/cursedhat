@@ -13,14 +13,14 @@ create_newwin(Rectangle r)
 	win = newwin(height, width, r.min.y, r.min.x);
 
 	if (win == NULL) {
-		// TODO
+		cerrx(1, "create_newwin newwin");
 	}
 
 	(void)box(win, 0 , 0);		/* 0, 0 gives default characters
 					 * for the vertical and horizontal
 					 * lines			*/
 	if (wrefresh(win) == ERR) {
-		// TODO
+		cerrx(1, "create_newwin wrefresh");
 	}
 
 	return win;
@@ -34,7 +34,7 @@ destroy_win(WINDOW *win)
 	 * and so an ugly remnant of window.
 	 */
 	if (wborder(win, ' ', ' ', ' ',' ',' ',' ',' ',' ') == ERR) {
-		// TODO
+		cerrx(1, "destroy_win wborder");
 	}
 
 	/* The parameters taken are
@@ -50,11 +50,11 @@ destroy_win(WINDOW *win)
 	 */
 
 	if (wrefresh(win) == ERR) {
-		// TODO
+		cerrx(1, "destroy_win wrefresh");
 	}
 
 	if (delwin(win) == ERR) {
-		// TODO
+		cerrx(1, "destroy_win delwin");
 	}
 }
 
@@ -92,7 +92,7 @@ newchat(Rectangle *r)
 	c.buf = malloc(COLS);
 
 	if (c.buf == NULL && COLS != 0) {
-		// TODO
+		cerr(1, "newchat c.buf malloc");
 	}
 
 	c.bufsize = COLS;
@@ -121,7 +121,7 @@ appendbuf(Chat *c, char ch)
 		c->buf = realloc(c->buf, c->bufsize);
 
 		if (c->buf == NULL && c->bufsize != 0) {
-			// TODO error
+			cerr(1, "appendbuf realloc");
 		}
 	}
 
