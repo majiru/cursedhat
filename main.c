@@ -11,8 +11,8 @@ Chat all_chats[MAXWIN];
 int
 main(int argc, char *argv[])
 {
-	char ch;
-	char tmp;
+	int tmp;
+	int ch;
 	int sock;
 
 	Point origin;
