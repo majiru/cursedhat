@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"net"
 )
@@ -20,9 +21,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for {
-		m, _ := bufio.NewReader(c).ReadString('\n')
+	r := bufio.NewReader(c)
 
-		fmt.Print(m)
+	for {
+		m, err := r.ReadString('\n')
+
+		if err != nil && err != io.EOF {
+			log.Fatal(err)
+		}
+
+		if len(m) > 0 {
+			fmt.Println(m)
+		}
 	}
 }
