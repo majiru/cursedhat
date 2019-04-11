@@ -1,11 +1,8 @@
-chat:
-	gcc -Wall -Wextra -ggdb cerr.c chat.c main.c net.c -o chat -l ncurses
-
-client-go:
+client:
 	go build client.go
 
-server-rs:
+server:
 	rustc server.rs
 
 clean:
-	rm -f chat
+	rm -f client server
